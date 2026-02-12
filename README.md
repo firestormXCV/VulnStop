@@ -2,7 +2,7 @@
 
 **Automated Cybersecurity Audit for Everyone.**
 
-Cyber Supervisor is an automated auditing solution designed to democratize cybersecurity for SMEs and developers. Born from the realization that 80% of European SMEs lack the resources to identify their IT vulnerabilities , this tool allows non-experts to scan websites and source code and receive clear, AI-generated reports.
+VulnStop is an automated auditing solution designed to democratize cybersecurity for SMEs and developers. Born from the realization that 80% of European SMEs lack the resources to identify their IT vulnerabilities , this tool allows non-experts to scan websites and source code and receive clear, AI-generated reports.
 
 **Key Features:**
 
