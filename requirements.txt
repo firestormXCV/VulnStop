@@ -1,0 +1,21 @@
+# --- Cœur du Projet (Orchestration & UI) ---
+crewai                  # Pour gérer les agents et les tâches
+chainlit                # Pour l'interface chatbot web (UI)
+crewai[google-genai]
+
+aiosqlite
+# --- Connecteurs IA (LLM) ---
+#langchain-community     # Nécessaire pour connecter Ollama (DeepHat)
+langchain-core          # Dépendance de base pour CrewAI et LangChain
+langchain-google-genai  # Si tu utilises Gemini pour la partie Chat/Routeur
+
+# LiteLLM (litellm) is required by CrewAI to use local/custom providers
+litellm
+google-generativeai  # Pour utiliser l'API Gemini de Google
+# --- Outils de Sécurité ---
+python-owasp-zap-v2.4   # API Python officielle pour piloter OWASP ZAP              
+requests                # Pour les scripts d'exploitation (PoC) et requêtes HTTP
+fpdf2                  # Pour générer des rapports PDF
+# --- Utilitaires & Visualisation ---
+python-dotenv           # Pour gérer tes clés API (si besoin) dans un fichier .env
+semgrep>=1.60.0       # Module d'analyse de code statique

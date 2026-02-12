@@ -1,0 +1,24 @@
+stages:
+  - deploy
+
+deploy_production:
+  stage: deploy
+
+  tags:
+    - PFE-480
+  # La pipeline ne se lance que si tu push sur la branche mvp
+  only:
+    - main
+  script:
+    - echo "🚀 Démarrage du déploiement sur le serveur de prod..."
+    
+    - mkdir -p reports
+    - chmod 777 reports
+    
+    - docker compose down || true
+    
+    - docker compose up -d --build --remove-orphans 
+    
+    - docker system prune -f
+    
+    - echo "✅ Déploiement terminé avec succès !"

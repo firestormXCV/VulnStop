@@ -1,0 +1,13 @@
+# Ignore virtual environment files
+venv/
+*/venv/
+**/venv/
+reports/
+.chainlit/
+__pycache__/
+chainlit.md
+.env
+temp_scans/*
+.files/
+*.sqlite
+.chainlit_data/

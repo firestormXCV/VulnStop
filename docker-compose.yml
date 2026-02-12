@@ -1,0 +1,116 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cyber-supervisor-app
+    # Charge les variables depuis le fichier .env situé au même endroit
+    env_file:
+      - .env
+    environment:
+      # Configuration ZAP (Communication interne Docker)
+      ZAP_HOST: "zap"
+      ZAP_PORT: "8080"
+      ZAP_API_KEY: "fte4g8ku9i8gvbjmreddcbspdb" # Doit correspondre à la config du service zap en bas
+      # Les variables GROQ et LLM sont chargées automatiquement via env_file
+    depends_on:
+      - zap
+    ports:
+      - "8000:8000"  # C'est ici que l'accès Web se joue (Port Host:Port Container)
+    volumes:
+      - ./reports:/app/reports
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 6g
+
+  zap:
+    image: zaproxy/zap-stable
+    container_name: zap-daemon
+  
+    environment:
+      # -Xmx16g : Max 16Go pour le moteur Java (Laisse 16Go au reste du système)
+      # -Xms4g  : Démarre doucement avec 4Go
+      - _JAVA_OPTIONS=-Xmx16g -Xms4g
+      - ZAP_JVM_OPTIONS=-Xmx16g -Xms4g
+      
+    command: >
+      zap.sh -daemon
+      -host 0.0.0.0
+      -port 8080
+      -config api.key=fte4g8ku9i8gvbjmreddcbspdb
+      -config api.addrs.addr.name=.*
+      -config api.addrs.addr.regex=true
+      -config connection.timeoutInSecs=120
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          # On coupe le conteneur s'il dépasse 20Go (Java Heap + Overhead)
+          # Cela garantit qu'il reste toujours 12Go pour l'OS.
+          memory: 20g
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"   # HTTP standard
+      - "443:443" # HTTPS standard
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile # Fichier de config
+      - caddy_data:/data # Pour stocker les certificats SSL
+      - caddy_config:/config
+    depends_on:
+      - app
+      - grafana
+
+
+  # --- MONITORING STACK ---
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: monitoring-cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    restart: unless-stopped
+
+  # 2. Prometheus : Base de données temporelle
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: monitoring-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+
+  # 3. Grafana : Interface Visuelle
+  grafana:
+    image: grafana/grafana:latest
+    container_name: monitoring-grafana
+    environment:
+      - GF_SERVER_ROOT_URL=https://pfe-480.duckdns.org/monitoring/
+      - GF_SERVER_DOMAIN=pfe-480.duckdns.org
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SECURITY_COOKIE_SAMESITE=lax
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  prometheus_data:
+  grafana_data:
+
