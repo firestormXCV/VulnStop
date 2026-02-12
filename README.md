@@ -216,7 +216,7 @@ Here is how the codebase is organized:
 
 ## 🤝 Contributing & Improvements
 
-We designed Cyber Supervisor to be modular. Here are some areas for contribution:
+We designed VulnStop to be modular. Here are some areas for contribution:
 
 * **LLM Flexibility:** Replace Gemini with other models (GPT-4, Mistral) in `modules/llm.py`.
 
