@@ -10,7 +10,7 @@ NC='\033[0m'
 
 clear
 echo -e "${CYAN}############################################################${NC}"
-echo -e "${CYAN}#        🛡️  CYBER-SUPERVISOR - INSTALLATEUR COMPLET       #${NC}"
+echo -e "${CYAN}#            🛡️  VULNSTOP  - INSTALLATEUR COMPLET          #${NC}"
 echo -e "${CYAN}############################################################${NC}"
 echo ""
 
